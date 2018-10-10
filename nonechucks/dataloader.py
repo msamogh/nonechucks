@@ -7,6 +7,10 @@ from .sampler import SafeSampler
 
 
 class _SafeDataLoaderCaller(type):
+    """Metaclass that overrides the __call__ method to replace
+    `SequentialSampler` and `RandomSampler` with their corresponding
+    `SafeSampler`s in DataLoader's namespace.
+    """
 
     def __call__(cls, *args, **kwargs):
         cls.replace_default_samplers()
@@ -32,4 +36,7 @@ class _SafeDataLoaderCaller(type):
 
 
 class SafeDataLoader(with_metaclass(_SafeDataLoaderCaller, data.DataLoader)):
+    """A DataLoader that reverts to safe versions of `SequentialSampler` and
+    `RandomSampler` when no default sampler is specified.
+    """
     pass
