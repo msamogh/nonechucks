@@ -84,6 +84,7 @@ for i_batch, sample_batched in enumerate(dataloader):
     # Do something with it
     pass
 ```
+In this case, `SafeDataset` will skip the erroneous image, and use the next one in the place of it (as opposed to dropping the entire batch).
 
 ### 2. Use Transforms as Filters!
 The function of transorms in PyTorch is restricted to *modifying* samples. With nonechucks, you can simply return `None` (or raise an exception) from the transform's `__call__` method, and nonechucks will drop the sample from the dataset for you, allowing you to use transforms as filters!
