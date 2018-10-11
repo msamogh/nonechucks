@@ -1,6 +1,6 @@
 # nonechucks
 
-**nonechucks** is a library for PyTorch that provides wrappers for datasets, samplers, and transforms to allow for dropping unwanted or invalid samples dynamically.
+**nonechucks** is a library that provides wrappers for PyTorch's datasets, samplers, and transforms to allow for dropping unwanted or invalid samples dynamically.
 
 - [Introduction](#Introduction)
 - [Examples](#Examples)
@@ -101,11 +101,12 @@ class LanguageFilter:
             return None
         return sample
 
-en_documents = PDFDocumentsDataset(data_dir='pdf_files/',
-            transform=transforms.Compose([
+transforms = transforms.Compose([
                 PlainTextTransform(),
                 LanguageFilter('en')
-            ]))
+            ])
+en_documents = PDFDocumentsDataset(data_dir='pdf_files/', transform=transforms)
+en_documents = nc.SafeDataset(en_documents)
 ```
 
 
