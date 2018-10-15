@@ -20,7 +20,8 @@ class SafeDataset(torch.utils.data.Dataset):
         # These will contain indices over the original dataset. The indices of
         # the safe samples will go into _safe_indices and similarly for unsafe
         # samples.
-        self._safe_indices = self._unsafe_indices = []
+        self._safe_indices = []
+        self._unsafe_indices = []
 
         # If eager_eval is True, we can simply go ahead and build the index
         # by attempting to access every sample in self.dataset.

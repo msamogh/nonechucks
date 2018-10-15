@@ -9,6 +9,7 @@ except ImportError:
 import torch
 import torch.utils.data as data
 
+from nonechucks import *
 import nonechucks
 
 
@@ -71,7 +72,6 @@ class SafeDatasetTest(unittest.TestCase):
         pass
 
     def test_import(self):
-        from nonechucks import *
         self.assertIsNotNone(SafeDataset)
         self.assertIsNotNone(SafeSampler)
 
