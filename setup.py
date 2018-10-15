@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='nonechucks',
-      version='0.2.2',
+      version='0.2.3',
       url='https://github.com/msamogh/nonechucks',
       license='MIT',
       author='Amogh Mannekote',
