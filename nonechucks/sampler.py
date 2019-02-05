@@ -40,7 +40,6 @@ class SafeSampler(torch.utils.data.Sampler):
         assert isinstance(dataset, SafeDataset), \
             "Dataset must be a SafeDataset."
         self.dataset = dataset
-        self.dataset.__class__.__getitem__ = self.dataset._get_sample_original
 
         self.sampler = sampler
         if sampler is not None:

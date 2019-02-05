@@ -39,4 +39,5 @@ class SafeDataLoader(with_metaclass(_SafeDataLoaderCaller, data.DataLoader)):
     """A DataLoader that reverts to safe versions of `SequentialSampler` and
     `RandomSampler` when no default sampler is specified.
     """
-    pass
+    def __init__(self, *args, **kwargs):
+        super(SafeDataLoader, self).__init__(*args, **kwargs)

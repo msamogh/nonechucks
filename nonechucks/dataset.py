@@ -13,10 +13,6 @@ class SafeDataset(torch.utils.data.Dataset):
         """Creates a `SafeDataset` wrapper around `dataset`."""
         self.dataset = dataset
         self.eager_eval = eager_eval
-        # "Backup" of dataset's original __getitem__ function (since we will
-        # be overwriting it)
-        self._get_sample_original = self.dataset.__getitem__
-        self.dataset.__class__.__getitem__ = self._safe_get_item
         # These will contain indices over the original dataset. The indices of
         # the safe samples will go into _safe_indices and similarly for unsafe
         # samples.
@@ -34,7 +30,7 @@ class SafeDataset(torch.utils.data.Dataset):
         and when they get accessed.
         """
         try:
-            sample = self._get_sample_original(idx)
+            sample = self.dataset[idx]
             if idx not in self._safe_indices:
                 self._safe_indices.append(idx)
             return sample
@@ -48,9 +44,9 @@ class SafeDataset(torch.utils.data.Dataset):
     def _build_index(self):
         for idx in range(len(self.dataset)):
             # The returned sample is deliberately discarded because
-            # self.dataset[idx] is called only to classify every index
+            # self._safe_get_item(idx) is called only to classify every index
             # into either safe_samples_indices or _unsafe_samples_indices.
-            _ = self.dataset[idx]
+            _ = self._safe_get_item(idx)
 
     def _reset_index(self):
         """Resets the safe and unsafe samples indices."""
@@ -75,22 +71,17 @@ class SafeDataset(torch.utils.data.Dataset):
         return len(self.dataset)
 
     def __iter__(self):
-        return (self.dataset[i] for i in range(len(self))
-                if self.dataset[i] is not None)
+        return (self._safe_get_item(i) for i in range(len(self))
+                if self._safe_get_item(i) is not None)
 
     @memoize
     def __getitem__(self, idx):
         """Behaves like the standard __getitem__ for Dataset when the index
         has been built.
         """
-        if self.is_index_built:
-            dataset_idx = self._safe_indices[idx]
-            return self.dataset[dataset_idx]
-
-        if idx == self.num_samples_examined:
-            while idx < len(self.dataset):
-                sample = self._safe_get_item(idx)
-                if sample is not None:
-                    return sample
-                idx += 1
-            raise IndexError
+        while idx < len(self.dataset):
+            sample = self._safe_get_item(idx)
+            if sample is not None:
+                return sample
+            idx += 1
+        raise IndexError
