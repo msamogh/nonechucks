@@ -4,7 +4,7 @@ import torch.utils.data
 from .dataset import SafeDataset
 
 
-class SafeSampler(torch.utils.data.Sampler):
+class SafeSampler(torch.utils.data.sampler.Sampler):
     """SafeSampler can be used both as a standard Sampler (over a Dataset),
     or as a wrapper around an existing `Sampler` instance. It allows you to
     drop unwanted samples while sampling.
