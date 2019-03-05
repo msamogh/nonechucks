@@ -42,8 +42,6 @@ class SafeSampler(torch.utils.data.sampler.Sampler):
         self.dataset = dataset
 
         self.sampler = sampler
-        if sampler is not None:
-            self.sampler_indices = list(iter(sampler))
 
         if step_to_index_fn is not None:
             self.step_to_index_fn = step_to_index_fn
@@ -52,6 +50,9 @@ class SafeSampler(torch.utils.data.sampler.Sampler):
 
     def __iter__(self):
         """Return iterator over sampled indices."""
+        if self.sampler is not None:
+            self.sampler_indices = list(iter(self.sampler))
+
         self.num_valid_samples = self.num_samples_examined = 0
         return self
 
