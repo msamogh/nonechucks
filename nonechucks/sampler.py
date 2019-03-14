@@ -10,6 +10,10 @@ class SafeSampler(torch.utils.data.sampler.Sampler):
     drop unwanted samples while sampling.
     """
 
+    @staticmethod
+    def default_step_to_index_fn(original_idx, actual_idx):
+        return actual_idx
+
     def __init__(self, dataset, sampler=None, step_to_index_fn=None):
         """Create a `SafeSampler` instance that performs sampling over either
         another sampler object or directly over a dataset. `step_to_index_fn`
@@ -38,15 +42,16 @@ class SafeSampler(torch.utils.data.sampler.Sampler):
                 `num_samples_examined` as the output.
         """
         assert isinstance(dataset, SafeDataset), \
-            "Dataset must be a SafeDataset."
+            "dataset must be an instance of SafeDataset."
         self.dataset = dataset
 
+        if sampler is None:
+            sampler = torch.utils.data.sampler.SequentialSampler(dataset)
         self.sampler = sampler
 
-        if step_to_index_fn is not None:
-            self.step_to_index_fn = step_to_index_fn
-        else:
-            self.step_to_index_fn = lambda original, actual: actual
+        if step_to_index_fn is None:
+            step_to_index_fn = SafeSampler.default_step_to_index_fn
+        self.step_to_index_fn = step_to_index_fn
 
     def __iter__(self):
         """Return iterator over sampled indices."""

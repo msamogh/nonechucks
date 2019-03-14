@@ -30,13 +30,20 @@ class SafeDataset(torch.utils.data.Dataset):
         and when they get accessed.
         """
         try:
+            # differentiates IndexError occuring here from one occuring during
+            # sample loading
+            invalid_idx = False
+            if idx >= len(self.dataset):
+                invalid_idx = True
+                raise IndexError
             sample = self.dataset[idx]
             if idx not in self._safe_indices:
                 self._safe_indices.append(idx)
             return sample
-        except IndexError:
-            raise
-        except Exception:
+        except Exception as e:
+            if isinstance(e, IndexError):
+                if invalid_idx:
+                    raise
             if idx not in self._unsafe_indices:
                 self._unsafe_indices.append(idx)
             return None
