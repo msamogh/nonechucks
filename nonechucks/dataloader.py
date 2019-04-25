@@ -63,8 +63,8 @@ class _SafeDataLoaderIter(data.dataloader._DataLoaderIter):
         # batch instead of trying to fill it up to a length of batch_size.
         #
         # Stays True until the current batch is filled so that nested calls for
-        # _process_next_batch from within the loop simply call the parent
-        # method.
+        # _process_next_batch from within the loop simply call the parent's
+        # version of the _process_next_batch.
         self.coalescing_in_progress = True
         n_empty_slots = self.batch_size - batch_len(curr_batch)
         while n_empty_slots > 0:
