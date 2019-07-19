@@ -92,3 +92,9 @@ class SafeDataset(torch.utils.data.Dataset):
                 return sample
             idx += 1
         raise IndexError
+
+    def __getattr__(self, key):
+        """Delegates to original dataset object if an attribute is not
+        found in this class.
+        """
+        return getattr(self.dataset, key)
