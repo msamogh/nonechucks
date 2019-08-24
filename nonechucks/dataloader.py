@@ -41,7 +41,7 @@ class _SafeDataLoaderCaller(type):
         data.dataloader.RandomSampler = cls.random
 
 
-class _SafeDataLoaderIter(data.dataloader._DataLoaderIter):
+class _SafeDataLoaderIter(data.dataloader._MultiProcessingDataLoaderIter):
 
     def __init__(self, loader):
         super().__init__(loader)
@@ -148,4 +148,4 @@ class SafeDataLoader(with_metaclass(_SafeDataLoaderCaller, data.DataLoader)):
     def __iter__(self):
         if self.num_workers > 0:
             return _SafeDataLoaderIter(self)
-        return data.dataloader._DataLoaderIter(self)
+        return data.dataloader._SingleProcessDataLoaderIter(self)
