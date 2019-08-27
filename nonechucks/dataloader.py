@@ -2,6 +2,7 @@ from functools import partial
 from future.utils import with_metaclass
 
 import torch.utils.data as data
+
 try:
     from torch.utils.data.dataloader import default_collate
 except ImportError:
@@ -32,9 +33,11 @@ class _SafeDataLoaderCaller(type):
             return SafeSampler(dataset, sampler_cls(dataset))
 
         data.dataloader.SequentialSampler = partial(
-            safe_sampler_callable, data.SequentialSampler)
+            safe_sampler_callable, data.SequentialSampler
+        )
         data.dataloader.RandomSampler = partial(
-            safe_sampler_callable, data.RandomSampler)
+            safe_sampler_callable, data.RandomSampler
+        )
 
     def _restore_default_samplers(cls):
         data.dataloader.SequentialSampler = cls.sequential
@@ -42,7 +45,6 @@ class _SafeDataLoaderCaller(type):
 
 
 class _SafeDataLoaderIter(data.dataloader._MultiProcessingDataLoaderIter):
-
     def __init__(self, loader):
         super().__init__(loader)
         self.batch_size = loader.batch_size
@@ -70,8 +72,7 @@ class _SafeDataLoaderIter(data.dataloader._MultiProcessingDataLoaderIter):
         while n_empty_slots > 0:
             # check if curr_batch is the final batch
             if self.batches_outstanding == 0 and not self.reorder_dict:
-                if (not self.drop_last) or \
-                   (batch_len(curr_batch) == self.batch_size):
+                if (not self.drop_last) or (batch_len(curr_batch) == self.batch_size):
                     return curr_batch
 
             # raises StopIteration if no more elements left, which exits the
@@ -85,21 +86,16 @@ class _SafeDataLoaderIter(data.dataloader._MultiProcessingDataLoaderIter):
                 # The remaining elements of next_batch are added back into the
                 # dict for future consumption.
                 self.rcvd_idx -= 1
-                curr_batch = collate_batches([
-                    curr_batch,
-                    slice_batch(next_batch, end=n_empty_slots)
-                ])
+                curr_batch = collate_batches(
+                    [curr_batch, slice_batch(next_batch, end=n_empty_slots)]
+                )
                 self.reorder_dict[self.rcvd_idx] = slice_batch(
-                    next_batch,
-                    start=n_empty_slots
+                    next_batch, start=n_empty_slots
                 )
             else:
                 curr_batch = collate_batches([curr_batch, next_batch])
 
-            n_empty_slots -= min(
-                n_empty_slots,
-                batch_len(next_batch)
-            )
+            n_empty_slots -= min(n_empty_slots, batch_len(next_batch))
         self.coalescing_in_progress = False
         return curr_batch
 
@@ -130,13 +126,14 @@ class SafeDataLoader(with_metaclass(_SafeDataLoaderCaller, data.DataLoader)):
         # drop_last is handled transparently by _SafeDataLoaderIter (bypassing
         # DataLoader). Since drop_last cannot be changed after initializing the
         # DataLoader instance, it needs to be intercepted here.
-        assert isinstance(dataset, SafeDataset), \
-            "dataset must be an instance of SafeDataset."
+        assert isinstance(
+            dataset, SafeDataset
+        ), "dataset must be an instance of SafeDataset."
 
         self.drop_last_original = False
-        if 'drop_last' in kwargs:
-            self.drop_last_original = kwargs['drop_last']
-            kwargs['drop_last'] = False
+        if "drop_last" in kwargs:
+            self.drop_last_original = kwargs["drop_last"]
+            kwargs["drop_last"] = False
         super(SafeDataLoader, self).__init__(dataset, **kwargs)
 
         self.safe_dataset = self.dataset

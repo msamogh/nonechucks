@@ -16,8 +16,7 @@ import nonechucks
 class SafeDatasetTest(unittest.TestCase):
     """Unit tests for `SafeDataset`."""
 
-    SafeDatasetPair = collections.namedtuple(
-        'SafeDatasetPair', ['unsafe', 'safe'])
+    SafeDatasetPair = collections.namedtuple("SafeDatasetPair", ["unsafe", "safe"])
 
     @classmethod
     def get_safe_dataset_pair(cls, dataset, **kwargs):
@@ -25,7 +24,8 @@ class SafeDatasetTest(unittest.TestCase):
             both the unsafe and safe versions of the dataset.
         """
         return SafeDatasetTest.SafeDatasetPair(
-            dataset, nonechucks.SafeDataset(dataset, **kwargs))
+            dataset, nonechucks.SafeDataset(dataset, **kwargs)
+        )
 
     def setUp(self):
         tensor_data = data.TensorDataset(torch.arange(0, 10))
@@ -75,5 +75,6 @@ class SafeDatasetTest(unittest.TestCase):
         self.assertIsNotNone(SafeDataset)
         self.assertIsNotNone(SafeSampler)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

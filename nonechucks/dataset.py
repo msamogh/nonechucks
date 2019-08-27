@@ -64,8 +64,7 @@ class SafeDataset(torch.utils.data.Dataset):
         """Returns True if all indices of the original dataset have been
         classified into safe_samples_indices or _unsafe_samples_indices.
         """
-        return len(self.dataset) == len(self._safe_indices) + \
-            len(self._unsafe_indices)
+        return len(self.dataset) == len(self._safe_indices) + len(self._unsafe_indices)
 
     @property
     def num_samples_examined(self):
@@ -78,8 +77,11 @@ class SafeDataset(torch.utils.data.Dataset):
         return len(self.dataset)
 
     def __iter__(self):
-        return (self._safe_get_item(i) for i in range(len(self))
-                if self._safe_get_item(i) is not None)
+        return (
+            self._safe_get_item(i)
+            for i in range(len(self))
+            if self._safe_get_item(i) is not None
+        )
 
     @memoize
     def __getitem__(self, idx):

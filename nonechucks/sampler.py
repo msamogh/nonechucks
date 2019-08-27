@@ -41,8 +41,9 @@ class SafeSampler(torch.utils.data.sampler.Sampler):
                 specified, the default function returns the
                 `num_samples_examined` as the output.
         """
-        assert isinstance(dataset, SafeDataset), \
-            "dataset must be an instance of SafeDataset."
+        assert isinstance(
+            dataset, SafeDataset
+        ), "dataset must be an instance of SafeDataset."
         self.dataset = dataset
 
         if sampler is None:
@@ -64,8 +65,7 @@ class SafeSampler(torch.utils.data.sampler.Sampler):
     def _get_next_index(self):
         """Helper function that calls `step_to_index_fn` and decides
         whether to sample directly from `dataset` or through `sampler`."""
-        index = self.step_to_index_fn(
-            self.num_valid_samples, self.num_samples_examined)
+        index = self.step_to_index_fn(self.num_valid_samples, self.num_samples_examined)
         if self.sampler is not None:
             index = self.sampler_indices[index]
         return index
