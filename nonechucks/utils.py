@@ -4,6 +4,7 @@ from itertools import chain
 from functools import partial
 
 import torch
+
 try:
     from torch.utils.data.dataloader import default_collate
 except ImportError:
@@ -59,8 +60,7 @@ def collate_batches(batches, collate_fn=default_collate):
     elif isinstance(batches[0], collections.Sequence):
         return list(chain(*batches))
     elif isinstance(batches[0], collections.Mapping):
-        return {key: default_collate([d[key] for d in batches])
-                for key in batches[0]}
+        return {key: default_collate([d[key] for d in batches]) for key in batches[0]}
     raise TypeError((error_msg.format(type(batches[0]))))
 
 
