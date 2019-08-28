@@ -8,9 +8,10 @@ try:
 except ImportError:
     from torch.utils.data._utils.collate import default_collate
 
-from .dataset import SafeDataset
-from .sampler import SafeSampler
-from .utils import batch_len, collate_batches, slice_batch
+from nonechucks import SingleProcessDataLoaderIter, MultiProcessingDataLoaderIter
+from nonechucks.dataset import SafeDataset
+from nonechucks.sampler import SafeSampler
+from nonechucks.utils import batch_len, collate_batches, slice_batch
 
 
 class _SafeDataLoaderCaller(type):
@@ -44,7 +45,7 @@ class _SafeDataLoaderCaller(type):
         data.dataloader.RandomSampler = cls.random
 
 
-class _SafeDataLoaderIter(data.dataloader._MultiProcessingDataLoaderIter):
+class _SafeDataLoaderIter(MultiProcessingDataLoaderIter):
     def __init__(self, loader):
         super().__init__(loader)
         self.batch_size = loader.batch_size
@@ -145,4 +146,4 @@ class SafeDataLoader(with_metaclass(_SafeDataLoaderCaller, data.DataLoader)):
     def __iter__(self):
         if self.num_workers > 0:
             return _SafeDataLoaderIter(self)
-        return data.dataloader._SingleProcessDataLoaderIter(self)
+        return SingleProcessDataLoaderIter(self)

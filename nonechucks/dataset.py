@@ -1,7 +1,7 @@
 import torch
 import torch.utils.data
 
-from .utils import memoize
+from nonechucks.utils import memoize
 
 
 class SafeDataset(torch.utils.data.Dataset):
