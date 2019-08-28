@@ -1,7 +1,7 @@
 import torch
 import torch.utils.data
 
-from .dataset import SafeDataset
+from nonechucks.dataset import SafeDataset
 
 
 class SafeSampler(torch.utils.data.sampler.Sampler):
