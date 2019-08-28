@@ -23,6 +23,7 @@ def _get_pytorch_version():
         )
     return major, minor
 
+
 MAJOR, MINOR = _get_pytorch_version()
 
 if MINOR > 1:
