@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 def _get_pytorch_version():
     version = torch.__version__
-    major, minor, patch = [int(x) for x in version.split(".")]
+    major, minor = [int(x) for x in version.split(".")[:2]]
     if major != 1:
         raise RuntimeError(
             "nonechucks only supports PyTorch major version 1 at the moment."
