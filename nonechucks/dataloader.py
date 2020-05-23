@@ -138,7 +138,7 @@ class SafeDataLoader(with_metaclass(_SafeDataLoaderCaller, data.DataLoader)):
         super(SafeDataLoader, self).__init__(dataset, **kwargs)
 
         self.safe_dataset = self.dataset
-        self.dataset = _OriginalDataset(self.safe_dataset)
+        # self.dataset.dataset = _OriginalDataset(self.safe_dataset)
 
         if self.collate_fn is default_collate:
             self.collate_fn = SafeDataLoader._safe_default_collate
