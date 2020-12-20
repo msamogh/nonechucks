@@ -17,10 +17,10 @@ def _get_pytorch_version():
         raise RuntimeError(
             "nonechucks only supports PyTorch major version 1 at the moment."
         )
-    if minor > 2:
+    if minor > 7:
         logger.warn(
             "nonechucks may not work properly with this version of PyTorch ({}). "
-            "It has only been tested on PyTorch versions 1.0, 1.1, and 1.2".format(
+            "It has only been tested on PyTorch versions up to 1.7".format(
                 version
             )
         )
