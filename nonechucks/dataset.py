@@ -88,12 +88,16 @@ class SafeDataset(torch.utils.data.Dataset):
         """Behaves like the standard __getitem__ for Dataset when the index
         has been built.
         """
+        start_idx = idx
         while idx < len(self.dataset):
             sample = self._safe_get_item(idx)
             if sample is not None:
                 return sample
             idx += 1
-        raise IndexError
+        if start_idx == 0:
+            raise IndexError
+        # Start over from the beginning.
+        return self.__getitem__(0)
 
     def __getattr__(self, key):
         """Delegates to original dataset object if an attribute is not
