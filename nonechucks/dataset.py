@@ -1,9 +1,6 @@
 import torch
 import torch.utils.data
 
-from nonechucks.utils import memoize
-
-
 class SafeDataset(torch.utils.data.Dataset):
     """A wrapper around a torch.utils.data.Dataset that allows dropping
     samples dynamically.
@@ -83,17 +80,20 @@ class SafeDataset(torch.utils.data.Dataset):
             if self._safe_get_item(i) is not None
         )
 
-    @memoize
     def __getitem__(self, idx):
         """Behaves like the standard __getitem__ for Dataset when the index
         has been built.
         """
+        start_idx = idx
         while idx < len(self.dataset):
             sample = self._safe_get_item(idx)
             if sample is not None:
                 return sample
             idx += 1
-        raise IndexError
+        if start_idx == 0:
+            raise IndexError
+        # Start over from the beginning.
+        return self.__getitem__(0)
 
     def __getattr__(self, key):
         """Delegates to original dataset object if an attribute is not
