@@ -2,6 +2,7 @@ import torch
 import torch.utils.data
 
 from nonechucks.utils import memoize
+from nonechucks.utils import NoneChucksSkipException
 
 
 class SafeDataset(torch.utils.data.Dataset):
@@ -9,10 +10,11 @@ class SafeDataset(torch.utils.data.Dataset):
     samples dynamically.
     """
 
-    def __init__(self, dataset, eager_eval=False):
+    def __init__(self, dataset, eager_eval=False, catch_all = True):
         """Creates a `SafeDataset` wrapper around `dataset`."""
         self.dataset = dataset
         self.eager_eval = eager_eval
+        self.catch_all = catch_all
         # These will contain indices over the original dataset. The indices of
         # the safe samples will go into _safe_indices and similarly for unsafe
         # samples.
@@ -41,6 +43,9 @@ class SafeDataset(torch.utils.data.Dataset):
                 self._safe_indices.append(idx)
             return sample
         except Exception as e:
+            if not self.catch_all:
+                if not isinstance(e, NoneChucksSkipException):
+                    raise
             if isinstance(e, IndexError):
                 if invalid_idx:
                     raise

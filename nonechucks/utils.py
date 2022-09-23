@@ -12,6 +12,10 @@ except ImportError:
 from torch._six import string_classes
 
 
+class NoneChucksSkipException(Exception):
+    None  # ...Chucks
+
+
 class memoize(object):
     """cache the return value of a method
 
